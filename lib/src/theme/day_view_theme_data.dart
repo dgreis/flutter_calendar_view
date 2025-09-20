@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'dark_app_colors.dart';
 import 'light_app_colors.dart';
 
+const _lightGridLineColor = Color(0xFFD0D5DD);
+const _darkGridLineColor = Color(0xFF5B6470);
+
 class DayViewThemeData extends ThemeExtension<DayViewThemeData> {
   /// Define custom colors
   DayViewThemeData({
@@ -36,10 +39,10 @@ class DayViewThemeData extends ThemeExtension<DayViewThemeData> {
 
   /// Get pre-defined colors for light theme
   DayViewThemeData.light()
-      : hourLineColor = LightAppColors.surfaceContainerHighest,
-        halfHourLineColor = LightAppColors.surfaceContainerHighest,
-        quarterHourLineColor = LightAppColors.surfaceContainerHighest,
-        pageBackgroundColor = LightAppColors.surfaceContainerLowest,
+      : hourLineColor = _lightGridLineColor,
+        halfHourLineColor = _lightGridLineColor,
+        quarterHourLineColor = _lightGridLineColor,
+        pageBackgroundColor = Colors.white,
         liveIndicatorColor = LightAppColors.primary,
         headerIconColor = LightAppColors.onPrimary,
         headerTextColor = LightAppColors.onPrimary,
@@ -48,9 +51,9 @@ class DayViewThemeData extends ThemeExtension<DayViewThemeData> {
 
   /// Get pre-defined colors for dark theme
   DayViewThemeData.dark()
-      : hourLineColor = DarkAppColors.surfaceContainerHighest,
-        halfHourLineColor = DarkAppColors.surfaceContainerHighest,
-        quarterHourLineColor = DarkAppColors.surfaceContainerHighest,
+      : hourLineColor = _darkGridLineColor,
+        halfHourLineColor = _darkGridLineColor,
+        quarterHourLineColor = _darkGridLineColor,
         pageBackgroundColor = DarkAppColors.surfaceContainerLowest,
         liveIndicatorColor = DarkAppColors.primary,
         headerIconColor = DarkAppColors.onPrimary,

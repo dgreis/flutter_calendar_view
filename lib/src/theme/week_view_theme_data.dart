@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'dark_app_colors.dart';
 import 'light_app_colors.dart';
 
+const _lightWeekdayBarColor = Colors.white;
+const _lightGridLineColor = Color(0xFFD0D5DD);
+const _darkGridLineColor = Color(0xFF5B6470);
+const _weekDayTextColor = Color(0xFF1F2F40);
+
 class WeekViewThemeData extends ThemeExtension<WeekViewThemeData> {
   /// Define custom colors
   WeekViewThemeData({
@@ -47,35 +52,35 @@ class WeekViewThemeData extends ThemeExtension<WeekViewThemeData> {
 
   /// Get pre-defined colors for light theme
   WeekViewThemeData.light()
-      : weekDayTileColor = LightAppColors.surfaceContainerHigh,
-        weekDayTextColor = LightAppColors.onSurface,
-        hourLineColor = LightAppColors.surfaceContainerHighest,
-        halfHourLineColor = LightAppColors.surfaceContainerHighest,
-        quarterHourLineColor = LightAppColors.surfaceContainerHighest,
+      : weekDayTileColor = _lightWeekdayBarColor,
+        weekDayTextColor = _weekDayTextColor,
+        hourLineColor = _lightGridLineColor,
+        halfHourLineColor = _lightGridLineColor,
+        quarterHourLineColor = _lightGridLineColor,
         liveIndicatorColor = LightAppColors.primary,
-        pageBackgroundColor = LightAppColors.surfaceContainerLowest,
+        pageBackgroundColor = Colors.white,
         headerIconColor = LightAppColors.onPrimary,
         headerTextColor = LightAppColors.onPrimary,
         headerBackgroundColor = LightAppColors.primary,
         timelineTextColor = LightAppColors.onSurface,
-        borderColor = LightAppColors.surfaceContainerHighest,
-        verticalLinesColor = LightAppColors.surfaceContainerHighest;
+        borderColor = _lightGridLineColor,
+        verticalLinesColor = _lightGridLineColor;
 
   /// Get pre-defined colors for dark theme
   WeekViewThemeData.dark()
-      : weekDayTileColor = DarkAppColors.surfaceContainerHigh,
-        weekDayTextColor = DarkAppColors.onSurface,
-        hourLineColor = DarkAppColors.surfaceContainerHighest,
-        halfHourLineColor = DarkAppColors.surfaceContainerHighest,
-        quarterHourLineColor = DarkAppColors.surfaceContainerHighest,
+      : weekDayTileColor = _lightWeekdayBarColor,
+        weekDayTextColor = _weekDayTextColor,
+        hourLineColor = _darkGridLineColor,
+        halfHourLineColor = _darkGridLineColor,
+        quarterHourLineColor = _darkGridLineColor,
         liveIndicatorColor = DarkAppColors.primary,
         pageBackgroundColor = DarkAppColors.surfaceContainerLowest,
         headerIconColor = DarkAppColors.onPrimary,
         headerTextColor = DarkAppColors.onPrimary,
         headerBackgroundColor = DarkAppColors.primary,
         timelineTextColor = DarkAppColors.onSurface,
-        borderColor = DarkAppColors.surfaceContainerHighest,
-        verticalLinesColor = DarkAppColors.surfaceContainerHighest;
+        borderColor = _darkGridLineColor,
+        verticalLinesColor = _darkGridLineColor;
 
   @override
   ThemeExtension<WeekViewThemeData> copyWith({

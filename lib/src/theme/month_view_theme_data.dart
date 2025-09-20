@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../constants.dart';
 import 'dark_app_colors.dart';
 import 'light_app_colors.dart';
+
+const _lightWeekdayBarColor = Colors.white;
+const _gridLineColor = Color(0xFFD0D5DD);
+const _weekDayTextColor = Color(0xFF1F2F40);
 
 class MonthViewThemeData extends ThemeExtension<MonthViewThemeData> {
   /// Define custom colors
@@ -41,30 +46,30 @@ class MonthViewThemeData extends ThemeExtension<MonthViewThemeData> {
 
   /// Get pre-defined colors for light theme
   MonthViewThemeData.light()
-      : cellInMonthColor = LightAppColors.surfaceContainerLowest,
+      : cellInMonthColor = Colors.white,
         cellNotInMonthColor = LightAppColors.surfaceContainerLow,
-        cellTextColor = LightAppColors.onSurface,
-        cellBorderColor = LightAppColors.surfaceContainerHigh,
-        weekDayTileColor = LightAppColors.surfaceContainerHigh,
-        weekDayTextColor = LightAppColors.onSurface,
-        weekDayBorderColor = LightAppColors.outlineVariant,
-        headerIconColor = LightAppColors.onPrimary,
-        headerTextColor = LightAppColors.onPrimary,
-        headerBackgroundColor = LightAppColors.primary,
+        cellTextColor = _weekDayTextColor,
+        cellBorderColor = _gridLineColor,
+        weekDayTileColor = _lightWeekdayBarColor,
+        weekDayTextColor = _weekDayTextColor,
+        weekDayBorderColor = _gridLineColor,
+        headerIconColor = Constants.black,
+        headerTextColor = Constants.black,
+        headerBackgroundColor = Constants.headerBackground,
         cellHighlightColor = LightAppColors.primary;
 
   /// Get pre-defined colors for dark theme
   MonthViewThemeData.dark()
       : cellInMonthColor = DarkAppColors.surfaceContainerLowest,
         cellNotInMonthColor = DarkAppColors.surfaceContainerLow,
-        cellTextColor = DarkAppColors.onSurface,
-        cellBorderColor = DarkAppColors.surfaceContainerHigh,
-        weekDayTileColor = DarkAppColors.surfaceContainerHigh,
-        weekDayTextColor = DarkAppColors.onSurface,
-        weekDayBorderColor = DarkAppColors.outlineVariant,
-        headerIconColor = DarkAppColors.onPrimary,
-        headerTextColor = DarkAppColors.onPrimary,
-        headerBackgroundColor = DarkAppColors.primary,
+        cellTextColor = _weekDayTextColor,
+        cellBorderColor = _gridLineColor,
+        weekDayTileColor = _lightWeekdayBarColor,
+        weekDayTextColor = _weekDayTextColor,
+        weekDayBorderColor = _gridLineColor,
+        headerIconColor = Constants.black,
+        headerTextColor = Constants.black,
+        headerBackgroundColor = Constants.headerBackground,
         cellHighlightColor = DarkAppColors.primary;
 
   @override
