@@ -70,11 +70,9 @@ class RoundedEventTile extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: titleStyle ??
-                    TextStyle(
-                      fontSize: 20,
-                      color: backgroundColor.accent,
-                    ),
+                style:
+                    titleStyle ??
+                    TextStyle(fontSize: 20, color: backgroundColor.accent),
                 softWrap: true,
                 overflow: TextOverflow.fade,
               ),
@@ -85,7 +83,8 @@ class RoundedEventTile extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 15.0),
                 child: Text(
                   description!,
-                  style: descriptionStyle ??
+                  style:
+                      descriptionStyle ??
                       TextStyle(
                         fontSize: 17,
                         color: backgroundColor.accent.withAlpha(200),
@@ -98,9 +97,7 @@ class RoundedEventTile extends StatelessWidget {
               child: Text(
                 "+${totalEvents - 1} more",
                 style: (descriptionStyle ??
-                        TextStyle(
-                          color: backgroundColor.accent.withAlpha(200),
-                        ))
+                        TextStyle(color: backgroundColor.accent.withAlpha(200)))
                     .copyWith(fontSize: 17),
               ),
             ),
@@ -131,18 +128,20 @@ class DefaultTimeLineMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hour = ((date.hour - 1) % 12) + 1;
-    final timeString = (timeStringBuilder != null)
-        ? timeStringBuilder!(date)
-        : date.minute != 0
+    final timeString =
+        (timeStringBuilder != null)
+            ? timeStringBuilder!(date)
+            : date.minute != 0
             ? "$hour:${date.minute}"
             : "$hour ${date.hour ~/ 12 == 0 ? "am" : "pm"}";
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Transform.translate(
       offset: Offset(0, -7.5),
       child: Padding(
-        padding: const EdgeInsets.only(right: 7.0),
+        padding: EdgeInsets.only(right: isRtl ? 0 : 7.0, left: isRtl ? 7.0 : 0),
         child: Text(
           timeString,
-          textAlign: TextAlign.right,
+          textAlign: isRtl ? TextAlign.left : TextAlign.right,
           style: markingStyle,
         ),
       ),
@@ -200,31 +199,34 @@ class FullDayEventView<T> extends StatelessWidget {
         itemCount: events.length,
         padding: padding ?? EdgeInsets.zero,
         shrinkWrap: true,
-        itemBuilder: (context, index) => InkWell(
-          onLongPress: () => onEventLongPress?.call(events, date),
-          onTap: () => onEventTap?.call(events, date),
-          onDoubleTap: () => onEventDoubleTap?.call(events, date),
-          child: itemView?.call(events[index]) ??
-              Container(
-                margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(1.0),
-                height: 24,
-                child: Text(
-                  events[index].title,
-                  style: titleStyle ??
-                      TextStyle(
-                        fontSize: 16,
-                        color: events[index].color.accent,
-                      ),
-                  maxLines: 1,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: events[index].color,
-                ),
-                alignment: Alignment.centerLeft,
-              ),
-        ),
+        itemBuilder:
+            (context, index) => InkWell(
+              onLongPress: () => onEventLongPress?.call(events, date),
+              onTap: () => onEventTap?.call(events, date),
+              onDoubleTap: () => onEventDoubleTap?.call(events, date),
+              child:
+                  itemView?.call(events[index]) ??
+                  Container(
+                    margin: const EdgeInsets.all(5.0),
+                    padding: const EdgeInsets.all(1.0),
+                    height: 24,
+                    child: Text(
+                      events[index].title,
+                      style:
+                          titleStyle ??
+                          TextStyle(
+                            fontSize: 16,
+                            color: events[index].color.accent,
+                          ),
+                      maxLines: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: events[index].color,
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+            ),
       ),
     );
   }

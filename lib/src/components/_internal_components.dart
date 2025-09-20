@@ -45,17 +45,17 @@ class LiveTimeIndicator extends StatefulWidget {
   final bool onlyShowToday;
 
   /// Widget to display tile line according to current time.
-  const LiveTimeIndicator(
-      {Key? key,
-      required this.width,
-      required this.height,
-      required this.timeLineWidth,
-      required this.liveTimeIndicatorSettings,
-      required this.heightPerMinute,
-      required this.startHour,
-      this.endHour = Constants.hoursADay,
-      this.onlyShowToday = false})
-      : super(key: key);
+  const LiveTimeIndicator({
+    Key? key,
+    required this.width,
+    required this.height,
+    required this.timeLineWidth,
+    required this.liveTimeIndicatorSettings,
+    required this.heightPerMinute,
+    required this.startHour,
+    this.endHour = Constants.hoursADay,
+    this.onlyShowToday = false,
+  }) : super(key: key);
 
   @override
   _LiveTimeIndicatorState createState() => _LiveTimeIndicatorState();
@@ -111,8 +111,10 @@ class _LiveTimeIndicatorState extends State<LiveTimeIndicator> {
     final currentMinute = _currentTime.minute.appendLeadingZero();
     final currentPeriod = _currentTime.period.name;
     final currentDateTime = _getCurrentDateTime();
-    final timeString = widget.liveTimeIndicatorSettings.timeStringBuilder
-            ?.call(currentDateTime) ??
+    final timeString =
+        widget.liveTimeIndicatorSettings.timeStringBuilder?.call(
+          currentDateTime,
+        ) ??
         '$currentHour:$currentMinute $currentPeriod';
 
     /// remove startHour minute from [_currentTime.getTotalMinutes]
@@ -128,15 +130,24 @@ class _LiveTimeIndicatorState extends State<LiveTimeIndicator> {
         widget.endHour <= _currentTime.hour) {
       return SizedBox.shrink();
     }
+    final textDirection = Directionality.of(context);
+    final isRtl = textDirection == TextDirection.rtl;
+    final timelineOffset =
+        widget.onlyShowToday
+            ? 0.0
+            : widget.timeLineWidth + widget.liveTimeIndicatorSettings.offset;
+    final dx =
+        widget.onlyShowToday
+            ? (isRtl ? widget.width : 0.0)
+            : (isRtl ? widget.width - timelineOffset : timelineOffset);
+
     return CustomPaint(
       size: Size(widget.width, widget.liveTimeIndicatorSettings.height),
       painter: CurrentTimeLinePainter(
         color: widget.liveTimeIndicatorSettings.color,
         height: widget.liveTimeIndicatorSettings.height,
         offset: Offset(
-          widget.onlyShowToday
-              ? 0
-              : widget.timeLineWidth + widget.liveTimeIndicatorSettings.offset,
+          dx.clamp(0.0, widget.width),
           (_currentTime.getTotalMinutes - startMinutes) *
               widget.heightPerMinute,
         ),
@@ -148,6 +159,7 @@ class _LiveTimeIndicatorState extends State<LiveTimeIndicator> {
         bulletRadius: widget.liveTimeIndicatorSettings.bulletRadius,
         timeBackgroundViewWidth:
             widget.liveTimeIndicatorSettings.timeBackgroundViewWidth,
+        textDirection: textDirection,
       ),
     );
   }
@@ -270,9 +282,11 @@ class _TimeLineState extends State<TimeLine> {
         children: [
           for (int i = widget.startHour + 1; i < widget.endHour; i++)
             _timelinePositioned(
-              topPosition: widget.hourHeight * (i - widget.startHour) -
+              topPosition:
+                  widget.hourHeight * (i - widget.startHour) -
                   widget.timeLineOffset,
-              bottomPosition: widget.height -
+              bottomPosition:
+                  widget.height -
                   (widget.hourHeight * (i - widget.startHour + 1)) +
                   widget.timeLineOffset,
               hour: i,
@@ -280,10 +294,12 @@ class _TimeLineState extends State<TimeLine> {
           if (widget.showHalfHours)
             for (int i = widget.startHour; i < widget.endHour; i++)
               _timelinePositioned(
-                topPosition: widget.hourHeight * (i - widget.startHour) -
+                topPosition:
+                    widget.hourHeight * (i - widget.startHour) -
                     widget.timeLineOffset +
                     widget._halfHourHeight,
-                bottomPosition: widget.height -
+                bottomPosition:
+                    widget.height -
                     (widget.hourHeight * (i - widget.startHour + 1)) +
                     widget.timeLineOffset,
                 hour: i,
@@ -293,10 +309,12 @@ class _TimeLineState extends State<TimeLine> {
             for (int i = widget.startHour; i < widget.endHour; i++) ...[
               /// this is for 15 minutes
               _timelinePositioned(
-                topPosition: widget.hourHeight * (i - widget.startHour) -
+                topPosition:
+                    widget.hourHeight * (i - widget.startHour) -
                     widget.timeLineOffset +
                     widget.hourHeight * 0.25,
-                bottomPosition: widget.height -
+                bottomPosition:
+                    widget.height -
                     (widget.hourHeight * (i - widget.startHour + 1)) +
                     widget.timeLineOffset,
                 hour: i,
@@ -305,10 +323,12 @@ class _TimeLineState extends State<TimeLine> {
 
               /// this is for 45 minutes
               _timelinePositioned(
-                topPosition: widget.hourHeight * (i - widget.startHour) -
+                topPosition:
+                    widget.hourHeight * (i - widget.startHour) -
                     widget.timeLineOffset +
                     widget.hourHeight * 0.75,
-                bottomPosition: widget.height -
+                bottomPosition:
+                    widget.height -
                     (widget.hourHeight * (i - widget.startHour + 1)) +
                     widget.timeLineOffset,
                 hour: i,
@@ -340,7 +360,8 @@ class _TimeLineState extends State<TimeLine> {
     );
 
     return Visibility(
-      visible: !((_currentTime.minute >= 45 && _currentTime.hour == hour - 1) ||
+      visible:
+          !((_currentTime.minute >= 45 && _currentTime.hour == hour - 1) ||
               (_currentTime.minute <= 15 && _currentTime.hour == hour)) ||
           !(widget.liveTimeIndicatorSettings.showTime ||
               widget.liveTimeIndicatorSettings.showTimeBackgroundView),
@@ -424,6 +445,8 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
   /// tile on display area. This method uses [eventArranger] to get position
   /// of events and [eventTileBuilder] to display events.
   List<Widget> _generateEvents(BuildContext context) {
+    final textDirection = Directionality.of(context);
+    final isRtl = textDirection == TextDirection.rtl;
     final events = eventArranger.arrange(
       events: this.events,
       height: height,
@@ -433,34 +456,40 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
       calendarViewDate: date,
     );
     return List.generate(events.length, (index) {
+      final tile = events[index];
+      final positionedLeft = isRtl ? tile.right : tile.left;
+      final positionedRight = isRtl ? tile.left : tile.right;
       return Positioned(
-        top: events[index].top,
-        bottom: events[index].bottom,
-        left: events[index].left,
-        right: events[index].right,
+        top: tile.top,
+        bottom: tile.bottom,
+        left: positionedLeft,
+        right: positionedRight,
         child: GestureDetector(
-          onLongPress: () => onTileLongTap?.call(events[index].events, date),
-          onTap: () => onTileTap?.call(events[index].events, date),
-          onDoubleTap: () => onTileDoubleTap?.call(events[index].events, date),
-          child: Builder(builder: (context) {
-            if (scrollNotifier.shouldScroll &&
-                events[index]
-                    .events
-                    .any((element) => element == scrollNotifier.event)) {
-              _scrollToEvent(context);
-            }
-            return eventTileBuilder(
-              date,
-              events[index].events,
-              Rect.fromLTWH(
-                  events[index].left,
-                  events[index].top,
-                  width - events[index].right - events[index].left,
-                  height - events[index].bottom - events[index].top),
-              events[index].startDuration,
-              events[index].endDuration,
-            );
-          }),
+          onLongPress: () => onTileLongTap?.call(tile.events, date),
+          onTap: () => onTileTap?.call(tile.events, date),
+          onDoubleTap: () => onTileDoubleTap?.call(tile.events, date),
+          child: Builder(
+            builder: (context) {
+              if (scrollNotifier.shouldScroll &&
+                  tile.events.any(
+                    (element) => element == scrollNotifier.event,
+                  )) {
+                _scrollToEvent(context);
+              }
+              return eventTileBuilder(
+                date,
+                tile.events,
+                Rect.fromLTWH(
+                  positionedLeft,
+                  tile.top,
+                  width - tile.right - tile.left,
+                  height - tile.bottom - tile.top,
+                ),
+                tile.startDuration,
+                tile.endDuration,
+              );
+            },
+          ),
         ),
       );
     });
@@ -492,9 +521,7 @@ class EventGenerator<T extends Object?> extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      child: Stack(
-        children: _generateEvents(context),
-      ),
+      child: Stack(children: _generateEvents(context)),
     );
   }
 }
@@ -564,24 +591,26 @@ class PressDetector extends StatelessWidget {
               bottom: height - (heightPerSlot * (i + 1)),
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTap: () => onDateTap?.call(
-                  DateTime(
-                    date.year,
-                    date.month,
-                    date.day,
-                    0,
-                    minuteSlotSize.minutes * i,
-                  ),
-                ),
-                onLongPress: () => onDateLongPress?.call(
-                  DateTime(
-                    date.year,
-                    date.month,
-                    date.day,
-                    0,
-                    minuteSlotSize.minutes * i,
-                  ),
-                ),
+                onTap:
+                    () => onDateTap?.call(
+                      DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        0,
+                        minuteSlotSize.minutes * i,
+                      ),
+                    ),
+                onLongPress:
+                    () => onDateLongPress?.call(
+                      DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        0,
+                        minuteSlotSize.minutes * i,
+                      ),
+                    ),
                 child: SizedBox(width: width, height: heightPerSlot),
               ),
             ),

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
@@ -66,9 +64,10 @@ class HourLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final dx = offset + emulateVerticalOffsetBy;
-    final paint = Paint()
-      ..color = lineColor
-      ..strokeWidth = lineHeight;
+    final paint =
+        Paint()
+          ..color = lineColor
+          ..strokeWidth = lineHeight;
 
     for (var i = startHour + 1; i < endHour; i++) {
       final dy = (i - startHour) * minuteHeight * 60;
@@ -76,7 +75,10 @@ class HourLinePainter extends CustomPainter {
         var startX = dx;
         while (startX < size.width) {
           canvas.drawLine(
-              Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
+            Offset(startX, dy),
+            Offset(startX + dashWidth, dy),
+            paint,
+          );
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
@@ -88,13 +90,19 @@ class HourLinePainter extends CustomPainter {
       if (lineStyle == LineStyle.dashed) {
         var startY = 0.0;
         while (startY < size.height) {
-          canvas.drawLine(Offset(offset + verticalLineOffset, startY),
-              Offset(offset + verticalLineOffset, startY + dashWidth), paint);
+          canvas.drawLine(
+            Offset(offset + verticalLineOffset, startY),
+            Offset(offset + verticalLineOffset, startY + dashWidth),
+            paint,
+          );
           startY += dashWidth + dashSpaceWidth;
         }
       } else {
-        canvas.drawLine(Offset(offset + verticalLineOffset, 0),
-            Offset(offset + verticalLineOffset, size.height), paint);
+        canvas.drawLine(
+          Offset(offset + verticalLineOffset, 0),
+          Offset(offset + verticalLineOffset, size.height),
+          paint,
+        );
       }
     }
   }
@@ -153,9 +161,10 @@ class HalfHourLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = lineColor
-      ..strokeWidth = lineHeight;
+    final paint =
+        Paint()
+          ..color = lineColor
+          ..strokeWidth = lineHeight;
 
     for (var i = startHour; i < endHour; i++) {
       final dy = (i - startHour) * minuteHeight * 60 + (minuteHeight * 30);
@@ -163,7 +172,10 @@ class HalfHourLinePainter extends CustomPainter {
         var startX = offset;
         while (startX < size.width) {
           canvas.drawLine(
-              Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
+            Offset(startX, dy),
+            Offset(startX + dashWidth, dy),
+            paint,
+          );
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
@@ -218,9 +230,10 @@ class QuarterHourLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = lineColor
-      ..strokeWidth = lineHeight;
+    final paint =
+        Paint()
+          ..color = lineColor
+          ..strokeWidth = lineHeight;
 
     for (var i = 0; i < Constants.hoursADay; i++) {
       final dy1 = i * minuteHeight * 60 + (minuteHeight * 15);
@@ -230,11 +243,17 @@ class QuarterHourLinePainter extends CustomPainter {
         var startX = offset;
         while (startX < size.width) {
           canvas.drawLine(
-              Offset(startX, dy1), Offset(startX + dashWidth, dy1), paint);
+            Offset(startX, dy1),
+            Offset(startX + dashWidth, dy1),
+            paint,
+          );
           startX += dashWidth + dashSpaceWidth;
 
           canvas.drawLine(
-              Offset(startX, dy2), Offset(startX + dashWidth, dy2), paint);
+            Offset(startX, dy2),
+            Offset(startX + dashWidth, dy2),
+            paint,
+          );
           startX += dashWidth + dashSpaceWidth;
         }
       } else {
@@ -283,6 +302,9 @@ class CurrentTimeLinePainter extends CustomPainter {
   /// Width of time backgroud view.
   final double timeBackgroundViewWidth;
 
+  /// Direction to layout the live time indicator.
+  final TextDirection textDirection;
+
   /// Paints a single horizontal line at [offset].
   CurrentTimeLinePainter({
     required this.showBullet,
@@ -294,28 +316,46 @@ class CurrentTimeLinePainter extends CustomPainter {
     required this.showTime,
     required this.showTimeBackgroundView,
     required this.timeBackgroundViewWidth,
+    this.textDirection = TextDirection.ltr,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawLine(
-      Offset(offset.dx - (showBullet ? 0 : 8), offset.dy),
-      Offset(size.width, offset.dy),
-      Paint()
-        ..color = color
-        ..strokeWidth = height,
-    );
+    final isRtl = textDirection == TextDirection.rtl;
+
+    final startX = isRtl ? 0.0 : offset.dx - (showBullet ? 0 : 8);
+    final endX =
+        isRtl
+            ? (offset.dx + (showBullet ? 0 : 8)).clamp(0.0, size.width)
+            : size.width;
+
+    if (endX > startX) {
+      canvas.drawLine(
+        Offset(startX, offset.dy),
+        Offset(endX, offset.dy),
+        Paint()
+          ..color = color
+          ..strokeWidth = height,
+      );
+    }
 
     if (showBullet) {
       canvas.drawCircle(
-          Offset(offset.dx, offset.dy), bulletRadius, Paint()..color = color);
+        Offset(offset.dx, offset.dy),
+        bulletRadius,
+        Paint()..color = color,
+      );
     }
 
     if (showTimeBackgroundView) {
+      final backgroundLeft = (offset.dx - timeBackgroundViewWidth - 4).clamp(
+        0.0,
+        size.width - timeBackgroundViewWidth,
+      );
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(
-            max(3, offset.dx - 68),
+            backgroundLeft,
             offset.dy - 11,
             timeBackgroundViewWidth,
             24,
@@ -330,8 +370,8 @@ class CurrentTimeLinePainter extends CustomPainter {
     }
 
     if (showTime) {
-      TextPainter(
-        textDirection: TextDirection.ltr,
+      final textPainter = TextPainter(
+        textDirection: textDirection,
         text: TextSpan(
           text: timeString,
           style: TextStyle(
@@ -339,9 +379,15 @@ class CurrentTimeLinePainter extends CustomPainter {
             color: showTimeBackgroundView ? Colors.white : color,
           ),
         ),
-      )
-        ..layout()
-        ..paint(canvas, Offset(offset.dx - 62, offset.dy - 6));
+      )..layout();
+
+      final textLeft = (offset.dx - textPainter.width - 6).clamp(
+        0.0,
+        size.width - textPainter.width,
+      );
+      final textTop = offset.dy - textPainter.height / 2;
+
+      textPainter.paint(canvas, Offset(textLeft, textTop));
     }
   }
 
@@ -356,5 +402,6 @@ class CurrentTimeLinePainter extends CustomPainter {
           timeBackgroundViewWidth != oldDelegate.timeBackgroundViewWidth ||
           showBullet != oldDelegate.showBullet ||
           showTime != oldDelegate.showTime ||
-          showTimeBackgroundView != oldDelegate.showTimeBackgroundView);
+          showTimeBackgroundView != oldDelegate.showTimeBackgroundView ||
+          textDirection != oldDelegate.textDirection);
 }
